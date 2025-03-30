@@ -50,7 +50,8 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.navigation:navigation-compose:2.7.2")
 
-
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Preview Support
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.1")

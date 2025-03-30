@@ -3,26 +3,35 @@ package com.renri.geminiaifitness.ui
 import android.view.ViewGroup
 import android.widget.CalendarView
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.renri.geminiaifitness.ui.models.Difficulty
+import com.renri.geminiaifitness.ui.viewmodels.DifficultyViewModel
 import com.renri.geminiaifitness.ui.navigation.Screen
 import java.util.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.saveable.rememberSaveable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController) {
-    // ✅ Store selected difficulty (persists across recompositions)
-    var selectedDifficulty by rememberSaveable { mutableStateOf("Good luck, Break a Sweat!") }
+fun MainScreen(
+    navController: NavController,
+    viewModel: DifficultyViewModel  // ✅ Shared ViewModel
+) {
+    val difficulty by viewModel.difficulty.collectAsState() // ✅ Automatically updates
+
+    val backgroundColor = when (difficulty) {
+        Difficulty.Easy -> Color(0xFF4CAF50)  // Green for Easy
+        Difficulty.Medium -> Color(0xFFFF9800)  // Orange for Medium
+        Difficulty.Hard -> Color(0xFFF44336)  // Red for Hard
+    }
 
     Scaffold(
         topBar = {
@@ -42,17 +51,19 @@ fun MainScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(backgroundColor)  // ✅ Changes dynamically
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = selectedDifficulty,
-                style = MaterialTheme.typography.headlineMedium
+                text = "Difficulty: $difficulty",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // CalendarView wrapped inside a Box
+            // Calendar View
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -62,18 +73,12 @@ fun MainScreen(navController: NavController) {
                         CalendarView(context).apply {
                             val today = Calendar.getInstance()
                             date = today.timeInMillis
-
-                            layoutParams = ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT, // Full width
-                                ViewGroup.LayoutParams.WRAP_CONTENT  // Auto height
-                            )
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            // 📌 Spacer to position the button correctly
             Spacer(modifier = Modifier.height(36.dp))
 
             // "Choose Your Poison" button
@@ -87,10 +92,4 @@ fun MainScreen(navController: NavController) {
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    MainScreen(navController = rememberNavController())
 }

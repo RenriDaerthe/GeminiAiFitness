@@ -1,4 +1,4 @@
-package com.renri.geminiaifitness.ui.themes
+package com.renri.geminiaifitness.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
