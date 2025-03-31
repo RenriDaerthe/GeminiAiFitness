@@ -15,6 +15,7 @@ import com.renri.geminiaifitness.ui.SettingsScreen
 import com.renri.geminiaifitness.ui.viewmodels.DifficultyViewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.renri.geminiaifitness.ui.WorkOutSettingsScreen
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -22,26 +23,27 @@ sealed class Screen(val route: String) {
     object Main : Screen("main")
     object Settings : Screen("settings")
     object SettingsDifficulty : Screen("settings_difficulty")
+    object WorkOutSettings : Screen("workout_settings")
 }
 
 @Composable
 fun AppNavGraph(application: Application) {
     val navController: NavHostController = rememberNavController()
 
-    // ✅ Use a factory to create DifficultyViewModel with Application context
+    //  Use a factory to create DifficultyViewModel with Application context
     val difficultyViewModel: DifficultyViewModel = viewModel(factory = viewModelFactory {
         initializer { DifficultyViewModel(application) }
     })
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.Main.route
     ) {
         composable(Screen.Main.route) {
-            MainScreen(navController, difficultyViewModel) // ✅ Pass ViewModel to MainScreen
+            MainScreen(navController, difficultyViewModel) //  Pass ViewModel to MainScreen
         }
         composable(Screen.SettingsDifficulty.route) {
-            DifficultySettings(navController, difficultyViewModel) // ✅ Pass ViewModel to DifficultySettings
+            DifficultySettings(navController, difficultyViewModel) //  Pass ViewModel to DifficultySettings
         }
         composable(Screen.Settings.route) {
             SettingsScreen(navController)
@@ -49,8 +51,13 @@ fun AppNavGraph(application: Application) {
         composable(Screen.Login.route) {
             LoginScreen(navController)
         }
+
+        composable(Screen.WorkOutSettings.route) {
+            WorkOutSettingsScreen(navController)
+        }
         composable(Screen.Registration.route) {
             RegistrationScreen(navController)
         }
+
     }
 }

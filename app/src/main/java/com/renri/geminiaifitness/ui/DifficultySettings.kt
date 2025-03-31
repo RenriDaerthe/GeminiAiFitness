@@ -33,8 +33,8 @@ fun DifficultySettings(
         ) {
             Button(
                 onClick = {
-                    viewModel.setDifficulty(Difficulty.Easy)  // ✅ Updates ViewModel
-                    navController.popBackStack()  // ✅ Returns to Main Screen
+                    viewModel.setDifficulty(Difficulty.Easy)  //  Updates ViewModel
+                    navController.popBackStack()  //  Returns to Main Screen
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
             ) {

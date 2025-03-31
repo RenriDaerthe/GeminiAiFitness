@@ -23,9 +23,9 @@ import androidx.compose.material.icons.filled.Settings
 @Composable
 fun MainScreen(
     navController: NavController,
-    viewModel: DifficultyViewModel  // ✅ Shared ViewModel
+    viewModel: DifficultyViewModel  // Shared ViewModel
 ) {
-    val difficulty by viewModel.difficulty.collectAsState() // ✅ Automatically updates
+    val difficulty by viewModel.difficulty.collectAsState() //  Automatically updates
 
     val backgroundColor = when (difficulty) {
         Difficulty.Easy -> Color(0xFF4CAF50)  // Green for Easy
@@ -51,15 +51,10 @@ fun MainScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColor)  // ✅ Changes dynamically
+                .background(backgroundColor)  //  Changes dynamically
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Difficulty: $difficulty",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color.White
-            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -79,17 +74,11 @@ fun MainScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(36.dp))
-
-            // "Choose Your Poison" button
-            Button(
-                onClick = { navController.navigate(Screen.SettingsDifficulty.route) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Text("Choose Your Poison")
-            }
+            Text(
+                text = "Difficulty: $difficulty",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White
+            )
         }
     }
 }

@@ -19,15 +19,15 @@ class DifficultyViewModel(application: Application) : AndroidViewModel(applicati
     init {
         viewModelScope.launch {
             dataStore.difficultyFlow.collectLatest { savedDifficulty ->
-                _difficulty.value = savedDifficulty  // ✅ Load saved difficulty
+                _difficulty.value = savedDifficulty  //  Load saved difficulty
             }
         }
     }
 
     fun setDifficulty(newDifficulty: Difficulty) {
         viewModelScope.launch {
-            _difficulty.value = newDifficulty  // ✅ Update in-memory
-            dataStore.saveDifficulty(newDifficulty)  // ✅ Save to DataStore
+            _difficulty.value = newDifficulty  //  Update in-memory
+            dataStore.saveDifficulty(newDifficulty)  //  Save to DataStore
         }
     }
 }
