@@ -15,6 +15,7 @@ import com.renri.geminiaifitness.ui.SettingsScreen
 import com.renri.geminiaifitness.ui.viewmodels.DifficultyViewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.renri.geminiaifitness.ui.WorkOutSettingRec
 import com.renri.geminiaifitness.ui.WorkOutSettingsScreen
 
 sealed class Screen(val route: String) {
@@ -24,6 +25,7 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
     object SettingsDifficulty : Screen("settings_difficulty")
     object WorkOutSettings : Screen("workout_settings")
+    object  WorkOutSettingRec : Screen("WorkOutSettingRec")
 }
 
 @Composable
@@ -58,6 +60,8 @@ fun AppNavGraph(application: Application) {
         composable(Screen.Registration.route) {
             RegistrationScreen(navController)
         }
-
+        composable(Screen.WorkOutSettingRec.route) {
+            WorkOutSettingRec(navController)
+        }
     }
 }

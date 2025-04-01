@@ -15,7 +15,7 @@ import com.renri.geminiaifitness.ui.viewmodels.DifficultyViewModel
 @Composable
 fun DifficultySettings(
     navController: NavController,
-    viewModel: DifficultyViewModel  // ✅ Uses shared ViewModel
+    viewModel: DifficultyViewModel  //  Uses shared ViewModel
 ) {
     Scaffold(
         topBar = {

@@ -10,8 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.renri.geminiaifitness.ui.navigation.Screen
 import com.renri.geminiaifitness.ui.viewmodels.WorkOutSettingsViewModel
 import kotlinx.coroutines.launch
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,9 +81,19 @@ fun WorkOutSettingsScreen(navController: NavController, viewModel: WorkOutSettin
                 Switch(checked = includeCardio, onCheckedChange = { includeCardio = it })
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+            // Gemini AI Re-Roll Button
+            Button(
+                onClick = { navController.navigate(Screen.WorkOutSettingRec.route) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("GeminiAi Re-Roll")
+            }
+
+
             Spacer(modifier = Modifier.weight(1f)) // Push button to bottom
 
-            // ✅ Save button now stores user input in DataStore
+            //  Save button now stores user input in DataStore
             Button(
                 onClick = {
                     coroutineScope.launch {

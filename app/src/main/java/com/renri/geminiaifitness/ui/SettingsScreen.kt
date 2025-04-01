@@ -4,21 +4,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.renri.geminiaifitness.ui.navigation.Screen
+import com.renri.geminiaifitness.ui.viewmodels.DifficultyViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController) {
+fun SettingsScreen(
+    navController: NavController,
+    difficultyViewModel: DifficultyViewModel = viewModel()
+) {
+    val difficulty by difficultyViewModel.difficulty.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Settings") },
-                actions = {
+                navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -37,23 +45,33 @@ fun SettingsScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+            Text("Difficulty Level: $difficulty", style = MaterialTheme.typography.headlineSmall)
 
-            // "Choose Your Poison" button (Moved from MainScreen)
+            Spacer(modifier = Modifier.height(16.dp))
+
             Button(
                 onClick = { navController.navigate(Screen.SettingsDifficulty.route) },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Choose Your Poison")
+                Text("Change Difficulty")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            //WorkoutSettings Button
             Button(
                 onClick = { navController.navigate(Screen.WorkOutSettings.route) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Workout Settings")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { navController.navigate(Screen.WorkOutSettingRec.route) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("GeminiAi Re-Roll")
             }
         }
     }
