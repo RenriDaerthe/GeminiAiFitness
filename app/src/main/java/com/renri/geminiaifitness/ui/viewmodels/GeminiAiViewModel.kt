@@ -35,6 +35,7 @@ class GeminiAiViewModel(
 
 
     fun generateWorkout(
+        userInput: String,
         difficulty: Difficulty,
         workOutSettingsViewModel: WorkOutSettingsViewModel
     ) {
