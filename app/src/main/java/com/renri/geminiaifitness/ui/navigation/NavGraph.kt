@@ -39,7 +39,7 @@ fun AppNavGraph(application: Application) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Main.route
+        startDestination = Screen.Login.route
     ) {
         composable(Screen.Main.route) {
             MainScreen(navController, difficultyViewModel) //  Pass ViewModel to MainScreen

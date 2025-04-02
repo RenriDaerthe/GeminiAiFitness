@@ -2,38 +2,41 @@ package com.renri.geminiaifitness.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.renri.geminiaifitness.ui.viewmodels.GeminiAiViewModel
+import com.renri.geminiaifitness.data.DataStoreManager
 import com.renri.geminiaifitness.ui.viewmodels.DifficultyViewModel
+import com.renri.geminiaifitness.ui.viewmodels.GeminiAiViewModel
 import com.renri.geminiaifitness.ui.viewmodels.WorkOutSettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkOutSettingRec(
     navController: NavController,
-    geminiViewModel: GeminiAiViewModel = viewModel(),
     difficultyViewModel: DifficultyViewModel = viewModel(),
     workOutSettingsViewModel: WorkOutSettingsViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val geminiViewModel: GeminiAiViewModel = viewModel(
+        factory = GeminiAiViewModel.Factory(dataStoreManager)
+    )
+
     val workoutResponse by geminiViewModel.workoutResponse.collectAsState()
     val errorMessage by geminiViewModel.errorMessage.collectAsState()
-    val difficulty by difficultyViewModel.difficulty.collectAsState() //  Get stored difficulty
+    val difficulty by difficultyViewModel.difficulty.collectAsState()
     val userSettings by workOutSettingsViewModel.userSettings.collectAsState()
 
     var userInput by remember { mutableStateOf("") }
 
-    //  Update userInput with stored data, including difficulty
     LaunchedEffect(userSettings, difficulty) {
         userInput = buildString {
             append("Create a ")
@@ -59,10 +62,7 @@ fun WorkOutSettingRec(
                 title = { Text("Gemini AI Workout") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -73,8 +73,7 @@ fun WorkOutSettingRec(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("Using stored difficulty: $difficulty")
 
@@ -90,18 +89,19 @@ fun WorkOutSettingRec(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { geminiViewModel.generateWorkout(userInput, difficulty, workOutSettingsViewModel) }
+                onClick = {
+                    geminiViewModel.generateWorkout(userInput, difficulty, workOutSettingsViewModel)
+                }
             ) {
                 Text("Generate Workout")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ✅ Scrollable LazyColumn for AI-generated workout response
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                    .weight(1f)
+                    .fillMaxWidth()
             ) {
                 item {
                     when {
@@ -113,7 +113,6 @@ fun WorkOutSettingRec(
                         }
                         else -> {
                             Text("Generated Workout:")
-
                             workoutResponse?.candidates?.firstOrNull()?.content?.parts?.forEach {
                                 Text(
                                     text = "- ${it.text}",
@@ -123,6 +122,18 @@ fun WorkOutSettingRec(
                         }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    geminiViewModel.saveParsedWorkout()
+                    navController.popBackStack()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Save to Calendar")
             }
         }
     }
