@@ -97,6 +97,6 @@ object GeminiAiService {
                 )
             )
         )
-        return apiAi.generateWorkout("AIzaSyCGok-wNZ9AsiXFGLCsUbzlQ3yu0_uwcqY", request) // Replace with your API Key
+        return apiAi.generateWorkout("", request) // Replace with your API Key
     }
 }
