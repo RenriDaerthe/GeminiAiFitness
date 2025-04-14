@@ -7,16 +7,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.renri.geminiaifitness.ui.navigation.Screen
+import com.renri.geminiaifitness.ui.viewmodels.LoginViewModel
+import com.renri.geminiaifitness.ui.viewmodels.ResultState
 
 @Composable
-fun RegistrationScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
+fun RegistrationScreen(navController: NavController, loginViewModel: LoginViewModel = viewModel()) {
+    var user by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf("") } // State for error messages
+    var errorMessage by remember { mutableStateOf("") }
+
+    val registerState by loginViewModel.registerState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -29,9 +34,9 @@ fun RegistrationScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
+            value = user,
+            onValueChange = { user = it },
+            label = { Text("Username") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -57,7 +62,6 @@ fun RegistrationScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Show error message if validation fails
         if (errorMessage.isNotEmpty()) {
             Text(
                 text = errorMessage,
@@ -66,16 +70,21 @@ fun RegistrationScreen(navController: NavController) {
             )
         }
 
+        // Show loading state
+        if (registerState is ResultState.Loading) {
+            CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+        }
+
         Button(
             onClick = {
                 when {
-                    email.isBlank() || password.isBlank() || confirmPassword.isBlank() ->
+                    user.isBlank() || password.isBlank() || confirmPassword.isBlank() ->
                         errorMessage = "All fields must be filled"
                     password != confirmPassword ->
                         errorMessage = "Passwords do not match"
                     else -> {
                         errorMessage = ""
-                        navController.navigate(Screen.Login.route) // Simulating registration success
+                        loginViewModel.register(user, password)
                     }
                 }
             },
@@ -90,6 +99,15 @@ fun RegistrationScreen(navController: NavController) {
             onClick = { navController.navigate(Screen.Login.route) }
         ) {
             Text("Already have an account? Login here")
+        }
+    }
+
+    // Navigate back on successful registration
+    LaunchedEffect(registerState) {
+        if (registerState is ResultState.Success) {
+            navController.navigate(Screen.Login.route)
+        } else if (registerState is ResultState.Error) {
+            errorMessage = (registerState as ResultState.Error).message
         }
     }
 }

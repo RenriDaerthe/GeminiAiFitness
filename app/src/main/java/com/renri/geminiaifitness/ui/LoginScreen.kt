@@ -7,15 +7,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.renri.geminiaifitness.ui.navigation.Screen
+import com.renri.geminiaifitness.ui.viewmodels.LoginViewModel
+import com.renri.geminiaifitness.ui.viewmodels.ResultState
+import androidx.compose.runtime.collectAsState
+
+
+
+
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
+fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = viewModel()) {
+    var user by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf("") } // State for error messages
+    var errorMessage by remember { mutableStateOf("") }
+
+    val loginState by loginViewModel.loginState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -28,9 +38,9 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
+            value = user,
+            onValueChange = { user = it },
+            label = { Text("Username") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -46,7 +56,7 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Show error message if there is one
+        // Show error message if any
         if (errorMessage.isNotEmpty()) {
             Text(
                 text = errorMessage,
@@ -55,13 +65,18 @@ fun LoginScreen(navController: NavController) {
             )
         }
 
+        // Show loading state
+        if (loginState is ResultState.Loading) {
+            CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+        }
+
         Button(
             onClick = {
-                if (email.isBlank() || password.isBlank()) {
-                    errorMessage = "Email and password cannot be empty"
+                if (user.isBlank() || password.isBlank()) {
+                    errorMessage = "User and password cannot be empty"
                 } else {
-                    errorMessage = "" // Clear error message
-                    navController.navigate(Screen.Main.route)
+                    errorMessage = ""
+                    loginViewModel.login(user, password)
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -75,6 +90,19 @@ fun LoginScreen(navController: NavController) {
             onClick = { navController.navigate(Screen.Registration.route) }
         ) {
             Text("Don't have an account? Register here")
+        }
+    }
+
+    // React to login result
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is ResultState.Success -> {
+                navController.navigate(Screen.Main.route)
+            }
+            is ResultState.Error -> {
+                errorMessage = (loginState as ResultState.Error).message
+            }
+            else -> {}
         }
     }
 }
